@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: redmine-deployment
+spec:
+  replicas: 1
+  selector:   
+    matchLabels:
+      app: redmine 
+  template:
+    metadata:
+      labels: 
+        app: redmine
+    spec:
+      containers:
+        - name: redmine
+          image: redmine
+          ports:
+            - containerPort: 3000
+          env:
+            - name: REDMINE_DB_POSTGRES
+              value: postgres-service
+            - name: REDMINE_DB_USERNAME
+              value: postgres 
+            - name: REDMINE_DB_DATABASE
+              value: postgres
+            - name: REDMINE_DB_PORT
+              value: '5432'
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-password
+                  key: pg-password 
+
+
+    

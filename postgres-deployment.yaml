@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: postgres-deployment
+spec: 
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: pg 
+
+  template:  
+    metadata:
+      labels:
+        app: pg 
+    spec:
+      containers: 
+        - name: pg
+          image: postgres 
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-password
+                  key: pg-password
+          volumeMounts: 
+            - name: postgres-pvc
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres  
+      volumes:
+        - name: postgres-pvc
+          persistentVolumeClaim:
+            claimName: postgres-persistent-volume-claim
+        
+
+# kubectl create secret generic pg-password --from-literal pg-password=12345
